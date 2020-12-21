@@ -1,25 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'; 
+import ReactDOM from 'react-dom';
+import {observer} from "mobx-react";
+import store from "./store";
+import Announcement from "./components/Announcement"; 
+import AddForm from "./components/AddForm";
+import "./css/main.css";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+  const {announcements} = store; 
+
+  const renderAddForm = ()=>{
+    ReactDOM.render(<AddForm addNew={(t,d,dd)=>{store.addAnnouncement(t,d,dd)}}/>,document.getElementById('root'));
+  }
+  
+  return(<div className="app container">
+    <div className="app--button">
+    <button onClick={renderAddForm}>Add New</button>
+
+    <input type="search" placeholder="Search" onChange={(e)=>{store.searchBy(e.target.value)}}/>
     </div>
-  );
+
+    <div className="app--body">
+    {announcements.map((item)=>{ return(
+    <Announcement 
+    item = {item}
+    id = {item.id}
+    title = {item.title}
+    description = {item.description}
+    date = {item.date}    
+    editAnnouncement = {()=>(store.editAnnounement(item.id,item.title,item.description,item.date))}
+    deleteAnnouncement = {()=>(store.deleteAnnouncement(item.id))}
+    /> )} )   }
+    </div>
+
+    </div>)
 }
 
-export default App;
+export default observer(App);
